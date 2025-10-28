@@ -39,14 +39,14 @@ def create_dataloader_v1(txt, batch_size=4, max_length=256,
 
     return dataloader
 class MultiHeadAttention(nn.Module):
-    def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
+    def __init__(self, d_in, d_out, context_length, dropout, n_heads, qkv_bias=False):
         super().__init__()
-        assert d_out % num_heads == 0, \
+        assert d_out % n_heads == 0, \
             'd_out must be divisible by num_heads'
 
         self.d_out = d_out
-        self.num_heads = num_heads
-        self.head_dim = d_out // num_heads
+        self.n_heads = n_heads
+        self.head_dim = d_out // n_heads
 
         self.W_q = nn.Linear(d_in, d_out,bias=qkv_bias)
         self.W_k = nn.Linear(d_in, d_out,bias=qkv_bias)
@@ -63,9 +63,9 @@ class MultiHeadAttention(nn.Module):
         value = self.W_v(x)
 
         #now split along n_heads
-        query = query.view(b,nseq,self.num_heads,self.head_dim)
-        key = key.view(b,nseq,self.num_heads,self.head_dim)
-        value = value.view(b,nseq,self.num_heads,self.head_dim)
+        query = query.view(b,nseq,self.n_heads,self.head_dim)
+        key = key.view(b,nseq,self.n_heads,self.head_dim)
+        value = value.view(b,nseq,self.n_heads,self.head_dim)
 
         #move n_head dimension in front of n_seq dim
         query = query.transpose(1,2)
