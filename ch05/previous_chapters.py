@@ -57,9 +57,9 @@ class MultiHeadAttention(nn.Module):
         self.n_heads = n_heads
         self.head_dim = d_out // n_heads
 
-        self.W_q = nn.Linear(d_in, d_out,bias=qkv_bias)
-        self.W_k = nn.Linear(d_in, d_out,bias=qkv_bias)
-        self.W_v = nn.Linear(d_in, d_out,bias=qkv_bias)
+        self.W_query = nn.Linear(d_in, d_out,bias=qkv_bias)
+        self.W_key = nn.Linear(d_in, d_out,bias=qkv_bias)
+        self.W_value = nn.Linear(d_in, d_out,bias=qkv_bias)
         self.register_buffer('mask', torch.triu(torch.ones(context_length,context_length),diagonal=1))
         self.dropout = nn.Dropout(dropout)
         self.out_proj = nn.Linear(d_out, d_out)
@@ -67,9 +67,9 @@ class MultiHeadAttention(nn.Module):
 
     def forward(self,x):
         b, nseq, d_in = x.shape
-        query = self.W_q(x)
-        key = self.W_k(x)
-        value = self.W_v(x)
+        query = self.W_query(x)
+        key = self.W_key(x)
+        value = self.W_value(x)
 
         #now split along n_heads
         query = query.view(b,nseq,self.n_heads,self.head_dim)
